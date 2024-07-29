@@ -4,11 +4,7 @@ PROJECT := forge
 # Final executable
 EXE := $(PROJECT).bin
 
-######################
-# Configure:Uitities #
-######################
-
-# Help:Utilities
+# Utilities
 MKDIR := mkdir
 RM := rm
 ECHO := echo
@@ -29,10 +25,6 @@ INCLUDE_DIR := include
 LIB_DIR := lib
 LIB_DEBUG_DIR := $(LIB_DIR)/debug
 LIB_RELEASE_DIR := $(LIB_DIR)/release
-
-#########################
-# Configure:Compilation #
-#########################
 
 # Compiler
 CC := clang
