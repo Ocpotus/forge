@@ -1,4 +1,6 @@
 *
+!.forge/Makefile
 !src/
 !src/**
 !config.toml
+!bootstrap.sh
