@@ -27,7 +27,7 @@ LIB_DEBUG_DIR := $(LIB_DIR)/debug
 LIB_RELEASE_DIR := $(LIB_DIR)/release
 
 # Compiler
-CC := clang
+CC := gcc
 
 # Source file type
 SRC_TYPE := c
