@@ -74,6 +74,24 @@ int main(int argc, char *argv[]) {
 				.function = forge_run,
 			},
 			{
+				.name = "module",
+				.about = "module management methods",
+				.usage = "module [ARGS]",
+				.description = "test",
+				.options = (struct optparse_opt []) {
+					{ CLI_HELP_OPTION },
+					(struct optparse_opt) {
+						.short_name = 'b',
+						.long_name = "build",
+						.description = "builds the modules in config.toml",
+						.flag_type = FLAG_TYPE_SET_TRUE,
+						.function = NULL,
+					},
+					{ END_OF_OPTIONS },
+				},
+				.function = NULL,
+			},
+			{
 				.name = "clean",
 				.about = "cleans the project",
 				.description = "Cleaning a project simply deletes all the generated "

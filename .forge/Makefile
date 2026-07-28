@@ -1,3 +1,6 @@
+.ONESHELL:
+.SILENT:
+
 # Project name
 PROJECT := forge
 
@@ -58,40 +61,40 @@ run: debug
 	./$(FORGE_BIN_DEBUG_DIR)/$(EXE) $(ARGS)
 
 debug: directories $(DEBUG_OBJS)
-	@$(CC) $(DEBUG_FLAGS) $(DEBUG_OBJS) $(DEBUG_LIBS) -o $(FORGE_BIN_DEBUG_DIR)/$(EXE)
+	$(CC) $(DEBUG_FLAGS) $(DEBUG_OBJS) $(DEBUG_LIBS) -o $(FORGE_BIN_DEBUG_DIR)/$(EXE)
 
 release: directories clean-release $(RELEASE_OBJS)
-	@$(CC) $(RELEASE_FLAGS) $(RELEASE_OBJS) $(RELEASE_LIBS) -o $(FORGE_BIN_RELEASE_DIR)/$(EXE)
+	$(CC) $(RELEASE_FLAGS) $(RELEASE_OBJS) $(RELEASE_LIBS) -o $(FORGE_BIN_RELEASE_DIR)/$(EXE)
 
 clean: clean-release clean-debug
 
 directories:
-	@$(MKDIR) -p $(FORGE_DIR)
-	@$(MKDIR) -p $(FORGE_BIN_DIR)
-	@$(MKDIR) -p $(FORGE_BIN_DEBUG_DIR)
-	@$(MKDIR) -p $(FORGE_BIN_DEBUG_OBJ_DIR)
-	@$(MKDIR) -p $(FORGE_BIN_RELEASE_DIR)
-	@$(MKDIR) -p $(FORGE_BIN_RELEASE_OBJ_DIR)
-	@$(MKDIR) -p $(SRC_DIR)
-	@$(MKDIR) -p $(INCLUDE_DIR)
-	@$(MKDIR) -p $(LIB_DIR)
-	@$(MKDIR) -p $(LIB_DEBUG_DIR)
-	@$(MKDIR) -p $(LIB_RELEASE_DIR)
+	$(MKDIR) -p $(FORGE_DIR)
+	$(MKDIR) -p $(FORGE_BIN_DIR)
+	$(MKDIR) -p $(FORGE_BIN_DEBUG_DIR)
+	$(MKDIR) -p $(FORGE_BIN_DEBUG_OBJ_DIR)
+	$(MKDIR) -p $(FORGE_BIN_RELEASE_DIR)
+	$(MKDIR) -p $(FORGE_BIN_RELEASE_OBJ_DIR)
+	$(MKDIR) -p $(SRC_DIR)
+	$(MKDIR) -p $(INCLUDE_DIR)
+	$(MKDIR) -p $(LIB_DIR)
+	$(MKDIR) -p $(LIB_DEBUG_DIR)
+	$(MKDIR) -p $(LIB_RELEASE_DIR)
 
 clean-release:
-	@$(RM) -f $(RELEASE_OBJS)
-	@$(RM) -f $(FORGE_BIN_RELEASE_DIR)/$(EXE)
-	@$(RM) -rf $(FORGE_BIN_RELEASE_OBJ_DIR)/*
+	$(RM) -f $(RELEASE_OBJS)
+	$(RM) -f $(FORGE_BIN_RELEASE_DIR)/$(EXE)
+	$(RM) -rf $(FORGE_BIN_RELEASE_OBJ_DIR)/*
 
 clean-debug:
-	@$(RM) -f $(DEBUG_OBJS)
-	@$(RM) -f $(FORGE_BIN_DEBUG_DIR)/$(EXE)
-	@$(RM) -rf $(FORGE_BIN_DEBUG_OBJ_DIR)/*
+	$(RM) -f $(DEBUG_OBJS)
+	$(RM) -f $(FORGE_BIN_DEBUG_DIR)/$(EXE)
+	$(RM) -rf $(FORGE_BIN_DEBUG_OBJ_DIR)/*
 
 $(DEBUG_OBJS): $(FORGE_BIN_DEBUG_OBJ_DIR)/%.o: $(SRC_DIR)/%.$(SRC_TYPE)
-	@$(MKDIR) -p $(dir $@)
-	@$(CC) $(DEBUG_FLAGS) -c $< -o $@
+	$(MKDIR) -p $(dir $@)
+	$(CC) $(DEBUG_FLAGS) -c $< -o $@
 
 $(RELEASE_OBJS): $(FORGE_BIN_RELEASE_OBJ_DIR)/%.o: $(SRC_DIR)/%.$(SRC_TYPE)
-	@$(MKDIR) -p $(dir $@)
-	@$(CC) $(RELEASE_FLAGS) -c $< -o $@
+	$(MKDIR) -p $(dir $@)
+	$(CC) $(RELEASE_FLAGS) -c $< -o $@
