@@ -5,6 +5,7 @@ FORGE_BIN_MODULES_DIR := $(FORGE_BIN_DIR)/modules
 SRC_DIR := $(CURDIR)/src
 MODULES_DIR= $(CURDIR)/modules
 
+# https://github.com/eteran/c-vector.git
 c-vector:
 	mkdir -p $(MODULES_DIR)/c-vector
 	cd /tmp/
@@ -14,6 +15,7 @@ c-vector:
 	cd /tmp/
 	rm -rf c-vector/
 
+# https://github.com/hippie68/optparse99.git
 optparse99:
 	mkdir -p $(MODULES_DIR)/optparse99
 	cd /tmp/
@@ -26,6 +28,7 @@ optparse99:
 	cd /tmp/
 	rm -rf optparse99/
 
+# https://github.com/cktan/tomlc99.git
 tomlc99:
 	mkdir -p $(MODULES_DIR)/tomlc99
 	cd /tmp/
@@ -37,4 +40,3 @@ tomlc99:
 	cp toml.h $(MODULES_DIR)/tomlc99
 	cd /tmp/
 	rm -rf tomlc99/
-

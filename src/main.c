@@ -1,4 +1,4 @@
-#include "lib/optparse99/optparse99.h"
+#include "../modules/optparse99/optparse99.h"
 
 #include "forge/forge.h"
 

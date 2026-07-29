@@ -55,10 +55,10 @@ run: debug
 	./$(FORGE_BIN_DEBUG_DIR)/$(EXE) $(ARGS)
 
 debug: directories $(DEBUG_OBJS)
-	$(CC) $(DEBUG_FLAGS) $(DEBUG_OBJS) -o $(FORGE_BIN_DEBUG_DIR)/$(EXE)
+	$(CC) $(DEBUG_FLAGS) $(DEBUG_OBJS) $(FORGE_BIN_MODULES_DIR)/*.o -o $(FORGE_BIN_DEBUG_DIR)/$(EXE)
 
 release: directories clean-release $(RELEASE_OBJS)
-	$(CC) $(RELEASE_FLAGS) $(RELEASE_OBJS) -o $(FORGE_BIN_RELEASE_DIR)/$(EXE)
+	$(CC) $(RELEASE_FLAGS) $(RELEASE_OBJS) $(FORGE_BIN_MODULES_DIR)/*.o -o $(FORGE_BIN_RELEASE_DIR)/$(EXE)
 
 clean: clean-release clean-debug
 

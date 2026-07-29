@@ -3,7 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "../../lib/tomlc99/toml.h"
+#include "../../../modules/tomlc99/toml.h"
+
 #include "../../lib/xmem/xmem.h"
 #include "../../lib/xerror/xerror.h"
 #include "../../lib/color/color.h"
