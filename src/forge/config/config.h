@@ -4,8 +4,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "../../../modules/c-vector/cvector.h"
+
 #define CONFIG_FILE "config.toml"
 
+
+typedef struct Module {
+	char *name;
+	char *source;
+} Module;
 
 typedef struct Config {
 	/*
@@ -19,6 +26,8 @@ typedef struct Config {
 		char *author;
 		char *version;
 	} info;
+
+	cvector(Module) modules;
 } Config;
 
 /* Parses a "config.toml" file.
@@ -38,6 +47,8 @@ void config_delete(Config *cfg);
  * @return: if the write was successful
  */
 bool config_write(const char *project);
+
+bool config_update(Config config);
 
 
 #endif

@@ -40,3 +40,16 @@ tomlc99:
 	cp toml.h $(MODULES_DIR)/tomlc99
 	cd /tmp/
 	rm -rf tomlc99/
+
+# https://github.com/antirez/linenoise.git
+linenoise:
+	mkdir -p $(MODULES_DIR)/linenoise
+	cd /tmp/
+	git clone https://github.com/antirez/linenoise.git &> /dev/null
+	cd linenoise
+	gcc linenoise.c -c linenoise.o -Wextra -Werror -Wall -O2 &> /dev/null
+	cp linenoise.o $(FORGE_BIN_MODULES_DIR)
+	cd /tmp/linenoise/
+	cp linenoise.h $(MODULES_DIR)/linenoise
+	cd /tmp/
+	rm -rf linenoise/

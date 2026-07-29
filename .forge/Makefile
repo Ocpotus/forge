@@ -94,4 +94,4 @@ $(RELEASE_OBJS): $(FORGE_BIN_RELEASE_OBJ_DIR)/%.o: $(SRC_DIR)/%.$(SRC_TYPE)
 # Modules
 include $(FORGE_DIR)/modules.mk
 
-modules: c-vector optparse99 tomlc99
+modules: c-vector optparse99 tomlc99 linenoise

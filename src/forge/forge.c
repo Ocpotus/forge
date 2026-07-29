@@ -13,9 +13,11 @@
 #include <sys/types.h>
 
 #include "../../modules/c-vector/cvector.h"
+#include "../../modules/linenoise/linenoise.h"
 
 #include "../color/color.h"
 #include "../xerror/xerror.h"
+#include "../xmem/xmem.h"
 
 #include "config/config.h"
 #include "util/util.h"
@@ -36,6 +38,7 @@
 
 #define FORGE_MAKEFILE (FORGE_DIR "/Makefile")
 #define FORGE_MODULES (FORGE_DIR "/modules.mk")
+#define FORGE_ADD (FORGE_DIR "/.add.mk")
 
 /* Project directories and files */
 #define SRC_DIR "src"
@@ -56,6 +59,7 @@
 #define BUILD_ERROR COLOR(FORGE, BWHITE) ": " COLOR("build error", BRED)
 #define INIT_ERROR  COLOR(FORGE, BWHITE) ": " COLOR("init error", BRED)
 #define CLEAN_ERROR COLOR(FORGE, BWHITE) ": " COLOR("clean error", BRED)
+#define MODULE_ERROR COLOR(FORGE, BWHITE) ": " COLOR("module error", BRED)
 
 
 /* Makefile source string
@@ -72,6 +76,13 @@ static const char *makefile;
  *
  */
 static const char *modules;
+
+/* .add.mk source string
+ *
+ * NOTE:
+ * 	Go twoards the bottom to see entire string
+ */
+static const char *add;
 
 /* Basic source code string
  *
@@ -220,11 +231,85 @@ void forge_module_build() {
 }
 
 void forge_module_verify() {
+	Config config = config_read();
 
+	for(Module *it1 = cvector_begin(config.modules); it1 != cvector_end(config.modules); it1 += 1) {
+		printf("Name: '%s', Source: '%s'\n", it1->name, it1->source);
+	}
+
+	config_delete(&config);
 }
 
 void forge_module_add() {
+	char *name = NULL;
+	char *source = NULL;
+	Config config = config_read();
+	char *editor = NULL;
+	FILE *fp = NULL;
 
+	while(true) {
+		bool found = false;
+
+		while(((name = linenoise("Name: ")) == NULL) || (name[0] == '\0')) {
+			fprintf(stderr, "Module must have a name!");
+		}
+
+		for(Module *it1 = cvector_begin(config.modules); it1 != cvector_end(config.modules); it1 += 1) {
+			if(!strcmp(name, it1->name)) {
+				fprintf(stderr, "module '%s' is already defined!\n", name);
+				xfree(name);
+				found = true;
+				break;
+			}
+		}
+
+		if(!found) {
+			break;
+		}
+	}
+
+	while((source = linenoise("Source: ")) == NULL) {
+		fprintf(stderr, "Module must have a source!\n");
+	}
+
+	for(Module *it1 = cvector_begin(config.modules); it1 != cvector_end(config.modules); it1 += 1) {
+		if(!strcmp(source, it1->source)) {
+			fprintf(stderr, "module source '%s' is already defined, this may cause issues!\n", source);
+			break;
+		}
+	}
+
+	fp = fopen(FORGE_ADD, "w+");
+
+	if(fp == NULL) {
+		xerror(MODULE_ERROR);
+	}
+
+	fprintf(fp, add, source, name);
+	fclose(fp);
+
+	// Get editor
+	editor = getenv("FORGE_EDITOR");
+
+	if(editor == NULL) {
+		editor = getenv("EDITOR");
+
+		if(editor == NULL) {
+			editor = getenv("VISUAL");
+
+			if(editor == NULL) {
+				editor = "vi";
+			}
+		}
+	}
+
+	shell_execute(editor, (char *[]) { editor, FORGE_ADD, NULL });
+	//shell_execute("tail", (char *[]) { "tail", "-n", "+2", FORGE_ADD, ">>", FORGE_MODULES, NULL });
+	cvector_push_back(config.modules, ((Module) { .name = name, .source = source}));
+	config_update(config);
+	config_delete(&config);
+	xfreev(name, source, NULL);
+	remove(FORGE_ADD);
 }
 
 static const char *code =
@@ -339,3 +424,18 @@ static const char *modules =
 "SRC_DIR := $(CURDIR)/src\n"
 "MODULES_DIR= $(CURDIR)/modules\n"
 "\n";
+
+/*
+FORGE_DIR := $(CURDIR)/.forge
+FORGE_BIN_DIR := $(FORGE_DIR)/bin
+FORGE_BIN_MODULES_DIR := $(FORGE_BIN_DIR)/modules
+
+SRC_DIR := $(CURDIR)/src
+MODULES_DIR= $(CURDIR)/modules
+*/
+static const char *add =
+"# $(FORGE_DIR) = .forge/, $(FORGE_BIN_MODULES_DIR) = .forge/bin/modules/, $(MODULES_DIR) = modules/\n"
+"\n"
+"# %s\n"
+"%s:\n"
+"";

@@ -3,8 +3,23 @@
 	author = ""
 	version = "0.1.0"
 
-	modules = [
-		{ name = "c-vector", source = "https://github.com/eteran/c-vector.git" },
-		{ name = "optparse99", source = "https://github.com/hippie68/optparse99.git" },
-		{ name = "tomlc99", source = "https://github.com/cktan/tomlc99.git" },
-	]
+[[module]]
+	name = "c-vector"
+	source = "https://github.com/eteran/c-vector.git"
+
+[[module]]
+	name = "optparse99"
+	source = "https://github.com/hippie68/optparse99.git"
+
+[[module]]
+	name = "tomlc99"
+	source = "https://github.com/cktan/tomlc99.git"
+
+[[module]]
+	name = "linenoise"
+	source = "https://github.com/antirez/linenoise.git"
+
+[[module]]
+	name = "apple"
+	source = "computer"
+
