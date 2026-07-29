@@ -1,5 +1,6 @@
 *
 !.forge/Makefile
+!.forge/modules.mk
 !src/
 !src/**
 !config.toml

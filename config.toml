@@ -2,3 +2,9 @@
 	name = "forge"
 	author = ""
 	version = "0.1.0"
+
+	modules = [
+		{ name = "c-vector", source = "https://github.com/eteran/c-vector.git" },
+		{ name = "optparse99", source = "https://github.com/hippie68/optparse99.git" },
+		{ name = "tomlc99", source = "https://github.com/cktan/tomlc99.git" },
+	]

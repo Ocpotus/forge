@@ -20,5 +20,9 @@ void forge_clean();
 /* Creates a new project */
 void forge_new(int argc, char **argv);
 
+void forge_module_build();
+void forge_module_verify();
+void forge_module_add();
+
 
 #endif

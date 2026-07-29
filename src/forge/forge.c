@@ -27,19 +27,18 @@
 /* Internal directories and files */
 #define FORGE_DIR ".forge"
 #define FORGE_BIN_DIR FORGE_DIR "/bin"
+#define FORGE_BIN_MODULES_DIR "/modules"
 #define FORGE_BIN_DEBUG_DIR FORGE_BIN_DIR "/debug"
 #define FORGE_BIN_DEBUG_OBJ_DIR FORGE_BIN_DEBUG_DIR "/obj"
 #define FORGE_BIN_RELEASE_DIR FORGE_BIN_DIR "/release"
 #define FORGE_BIN_RELEASE_OBJ_DIR FORGE_BIN_RELEASE_DIR "/obj"
 
 #define FORGE_MAKEFILE (FORGE_DIR "/Makefile")
+#define FORGE_MODULES (FORGE_DIR "/modules.mk")
 
 /* Project directories and files */
 #define SRC_DIR "src"
-#define INCLUDE_DIR "include"
-#define LIB_DIR "lib"
-#define LIB_DEBUG_DIR LIB_DIR "/debug"
-#define LIB_RELEASE_DIR LIB_DIR "/release"
+#define MODULES_DIR "modules"
 #define MAIN_FILE SRC_DIR "/main.c"
 
 /* Make related arguments */
@@ -49,6 +48,7 @@
 #define MAKE_DEBUG "debug"
 #define MAKE_RELEASE "release"
 #define MAKE_CLEAN "clean"
+#define MAKE_MODULES "modules"
 
 /* Error messages */
 #define RUN_ERROR   COLOR(FORGE, BWHITE) ": " COLOR("run error", BRED)
@@ -64,6 +64,14 @@
  */
 static const char *makefile;
 
+/* modules.mk source string
+ *
+ * NOTE:
+ * 	Go towards the bottom to see entire string
+ *
+ */
+static const char *modules;
+
 /* Basic source code string
  *
  * NOTE:
@@ -75,15 +83,13 @@ static const char *code;
 static char *directories[] = {
         FORGE_DIR,
 	FORGE_BIN_DIR,
+	FORGE_BIN_MODULES_DIR,
 	FORGE_BIN_DEBUG_DIR,
 	FORGE_BIN_DEBUG_OBJ_DIR,
 	FORGE_BIN_RELEASE_DIR,
 	FORGE_BIN_RELEASE_OBJ_DIR,
 	SRC_DIR,
-	INCLUDE_DIR,
-	LIB_DIR,
-	LIB_DEBUG_DIR,
-	LIB_RELEASE_DIR,
+	MODULES_DIR,
 };
 
 /* Flag to signify if the project has already been built.
@@ -196,8 +202,28 @@ void forge_new(int argc, char **argv) {
 		if(fp != NULL) {
 			fprintf(fp, "%s", code);
 			fclose(fp);
+
+			fp = fopen(FORGE_MODULES, "w+");
+
+			if(fp != NULL) {
+				fprintf(fp, "%s", modules);
+				fclose(fp);
+			}
 		}
 	}
+}
+
+void forge_module_build() {
+	printf("Building modules...\n");
+	shell_execute(MAKE, (char *[]) { MAKE, MAKE_FILE_FLAG, FORGE_MAKEFILE, MAKE_MODULES, NULL, });
+}
+
+void forge_module_verify() {
+
+}
+
+void forge_module_add() {
+
 }
 
 static const char *code =
@@ -231,16 +257,14 @@ static const char *makefile =
 "# Internal forge directories\n"
 "FORGE_DIR := .forge\n"
 "FORGE_BIN_DIR := $(FORGE_DIR)/bin\n"
+"FOREGE_BIN_MODULES_DIR := $(FORGE_BIN_DIR)/modules\n"
 "FORGE_BIN_DEBUG_DIR := $(FORGE_BIN_DIR)/debug\n"
 "FORGE_BIN_DEBUG_OBJ_DIR := $(FORGE_BIN_DEBUG_DIR)/obj\n"
 "FORGE_BIN_RELEASE_DIR := $(FORGE_BIN_DIR)/release\n"
 "FORGE_BIN_RELEASE_OBJ_DIR := $(FORGE_BIN_RELEASE_DIR)/obj\n"
 "\n"
 "SRC_DIR := src\n"
-"INCLUDE_DIR := include\n"
-"LIB_DIR := lib\n"
-"LIB_DEBUG_DIR := $(LIB_DIR)/debug\n"
-"LIB_RELEASE_DIR := $(LIB_DIR)/release\n"
+"MODULES_DIR := modules\n"
 "\n"
 "# Compiler\n"
 "CC := clang\n"
@@ -253,10 +277,6 @@ static const char *makefile =
 "DEBUG_OBJS := $(addprefix $(FORGE_BIN_DEBUG_OBJ_DIR)/,$(SRCS:src/%%.$(SRC_TYPE)=%%.o))\n"
 "RELEASE_OBJS := $(addprefix $(FORGE_BIN_RELEASE_OBJ_DIR)/,$(SRCS:src/%%.$(SRC_TYPE)=%%.o))\n"
 "\n"
-"# Lib files\n"
-"DEBUG_LIBS := $(shell find $(LIB_DEBUG_DIR) -type f -name \"*.o\")\n"
-"RELEASE_LIBS := $(shell find $(LIB_RELEASE_DIR) -type f -name \"*.o\")\n"
-"\n"
 "# Compilation flags\n"
 "LINKER_FLAGS :=\n"
 "INCLUDE_FLAGS := -I$(INCLUDE_DIR)\n"
@@ -266,6 +286,17 @@ static const char *makefile =
 "# Arguments to be passed when running \"make run Args=\"<arguments>\"\n"
 "ARGS :=\n"
 "\n"
+"directories:\n"
+"\t$(MKDIR) -p $(FORGE_DIR)\n"
+"\t$(MKDIR) -p $(FORGE_BIN_DIR)\n"
+"\t$(MKDIR) -p $(FORGE_BIN_MODULES_DIR)\n"
+"\t$(MKDIR) -p $(FORGE_BIN_DEBUG_DIR)\n"
+"\t$(MKDIR) -p $(FORGE_BIN_DEBUG_OBJ_DIR)\n"
+"\t$(MKDIR) -p $(FORGE_BIN_RELEASE_DIR)\n"
+"\t$(MKDIR) -p $(FORGE_BIN_RELEASE_OBJ_DIR)\n"
+"\t$(MKDIR) -p $(SRC_DIR)\n"
+"\t$(MKDIR) -p $(MODULES_DIR)\n"
+"\n"
 ".PHONY: all run debug release clean directories clean-release clean-debug\n"
 "\n"
 "all: debug\n"
@@ -274,25 +305,12 @@ static const char *makefile =
 "\t./$(FORGE_BIN_DEBUG_DIR)/$(EXE) $(ARGS)\n"
 "\n"
 "debug: directories $(DEBUG_OBJS)\n"
-"\t$(CC) $(DEBUG_FLAGS) $(DEBUG_OBJS) $(DEBUG_LIBS) -o $(FORGE_BIN_DEBUG_DIR)/$(EXE)\n"
+"\t$(CC) $(DEBUG_FLAGS) $(DEBUG_OBJS) $(FORGE_BIN_MODULES_DIR)/*.o -o $(FORGE_BIN_DEBUG_DIR)/$(EXE)\n"
 "\n"
 "release: directories clean-release $(RELEASE_OBJS)\n"
-"\t$(CC) $(RELEASE_FLAGS) $(RELEASE_OBJS) $(RELEASE_LIBS) -o $(FORGE_BIN_RELEASE_DIR)/$(EXE)\n"
+"\t$(CC) $(RELEASE_FLAGS) $(RELEASE_OBJS) $(FORGE_BIN_MODULES_DIR)/*.o -o $(FORGE_BIN_RELEASE_DIR)/$(EXE)\n"
 "\n"
 "clean: clean-release clean-debug\n"
-"\n"
-"directories:\n"
-"\t$(MKDIR) -p $(FORGE_DIR)\n"
-"\t$(MKDIR) -p $(FORGE_BIN_DIR)\n"
-"\t$(MKDIR) -p $(FORGE_BIN_DEBUG_DIR)\n"
-"\t$(MKDIR) -p $(FORGE_BIN_DEBUG_OBJ_DIR)\n"
-"\t$(MKDIR) -p $(FORGE_BIN_RELEASE_DIR)\n"
-"\t$(MKDIR) -p $(FORGE_BIN_RELEASE_OBJ_DIR)\n"
-"\t$(MKDIR) -p $(SRC_DIR)\n"
-"\t$(MKDIR) -p $(INCLUDE_DIR)\n"
-"\t$(MKDIR) -p $(LIB_DIR)\n"
-"\t$(MKDIR) -p $(LIB_DEBUG_DIR)\n"
-"\t$(MKDIR) -p $(LIB_RELEASE_DIR)\n"
 "\n"
 "clean-release:\n"
 "\t$(RM) -f $(RELEASE_OBJS)\n"
@@ -307,4 +325,16 @@ static const char *makefile =
 "$(RELEASE_OBJS): $(FORGE_BIN_RELEASE_OBJ_DIR)/%%.o: $(SRC_DIR)/%%.$(SRC_TYPE)\n"
 "\t$(MKDIR) -p $(dir $@)\n"
 "\t$(CC) $(RELEASE_FLAGS) -c $< -o $@\n"
+"\n"
+"# Modules\n"
+"include modules\n"
+"build-modules:";
+
+static const char *modules =
+"FORGE_DIR := $(CURDIR)/.forge\n"
+"FORGE_BIN_DIR := $(FORGE_DIR)/bin\n"
+"FORGE_BIN_MODULES_DIR := $(FORGE_BIN_DIR)/modules\n"
+"\n"
+"SRC_DIR := $(CURDIR)/src\n"
+"MODULES_DIR= $(CURDIR)/modules\n"
 "\n";
