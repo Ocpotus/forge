@@ -14,8 +14,8 @@
 
 #include "../../modules/c-vector/cvector.h"
 
-#include "../lib/color/color.h"
-#include "../lib/xerror/xerror.h"
+#include "../color/color.h"
+#include "../xerror/xerror.h"
 
 #include "config/config.h"
 #include "util/util.h"

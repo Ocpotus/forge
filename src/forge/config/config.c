@@ -5,9 +5,9 @@
 
 #include "../../../modules/tomlc99/toml.h"
 
-#include "../../lib/xmem/xmem.h"
-#include "../../lib/xerror/xerror.h"
-#include "../../lib/color/color.h"
+#include "../../xmem/xmem.h"
+#include "../../xerror/xerror.h"
+#include "../../color/color.h"
 
 #include "../util/util.h"
 
